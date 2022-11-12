@@ -21,12 +21,12 @@ import (
 
 // Block represents each 'item' in the blockchain
 type Block struct {
-	Index     int
-	Timestamp string
-	BPM       int
-	Hash      string
-	PrevHash  string
-	Validator string
+	Index       int
+	Timestamp   string
+	LicenseInfo string
+	Hash        string
+	PrevHash    string
+	Validator   string
 }
 
 // Blockchain is a series of validated Blocks
@@ -53,7 +53,7 @@ func main() {
 	// create genesis block
 	t := time.Now()
 	genesisBlock := Block{}
-	genesisBlock = Block{0, t.String(), 0, calculateBlockHash(genesisBlock), "", ""}
+	genesisBlock = Block{0, t.String(), "genesisLicenseInfo", calculateBlockHash(genesisBlock), "", ""}
 	spew.Dump(genesisBlock)
 	Blockchain = append(Blockchain, genesisBlock)
 
@@ -179,28 +179,28 @@ func handleConn(conn net.Conn) {
 		break
 	}
 
-	io.WriteString(conn, "\nEnter a new BPM:")
+	io.WriteString(conn, "\nEnter a new LicenseInfo:")
 
-	scanBPM := bufio.NewScanner(conn)
+	scanLicenseInfo := bufio.NewScanner(conn)
 
 	go func() {
 		for {
-			// take in BPM from stdin and add it to blockchain after conducting necessary validation
-			for scanBPM.Scan() {
-				bpm, err := strconv.Atoi(scanBPM.Text())
+			// take in LicenseInfo from stdin and add it to blockchain after conducting necessary validation
+			for scanLicenseInfo.Scan() {
+				licenseInfo := scanLicenseInfo.Text()
 				// if malicious party tries to mutate the chain with a bad input, delete them as a validator and they lose their staked tokens
-				if err != nil {
-					log.Printf("%v not a number: %v", scanBPM.Text(), err)
-					delete(validators, address)
-					conn.Close()
-				}
+				// if err != nil {
+				// 	log.Printf(scanLicenseInfo.Text()+" not a string:", err)
+				// 	delete(validators, address)
+				// 	conn.Close()
+				// }
 
 				mutex.Lock()
 				oldLastIndex := Blockchain[len(Blockchain)-1]
 				mutex.Unlock()
 
 				// create newBlock for consideration to be forged
-				newBlock, err := generateBlock(oldLastIndex, bpm, address)
+				newBlock, err := generateBlock(oldLastIndex, licenseInfo, address)
 				if err != nil {
 					log.Println(err)
 					continue
@@ -208,7 +208,7 @@ func handleConn(conn net.Conn) {
 				if isBlockValid(newBlock, oldLastIndex) {
 					candidateBlocks <- newBlock
 				}
-				io.WriteString(conn, "\nEnter a new BPM:")
+				io.WriteString(conn, "\nEnter a new License Info:")
 			}
 		}
 	}()
@@ -256,12 +256,12 @@ func calculateHash(s string) string {
 
 // calculateBlockHash returns the hash of all block information
 func calculateBlockHash(block Block) string {
-	record := string(block.Index) + block.Timestamp + string(block.BPM) + block.PrevHash
+	record := string(block.Index) + block.Timestamp + block.LicenseInfo + block.PrevHash
 	return calculateHash(record)
 }
 
 // generateBlock creates a new block using previous block's hash
-func generateBlock(oldBlock Block, BPM int, address string) (Block, error) {
+func generateBlock(oldBlock Block, licenseInfo string, address string) (Block, error) {
 
 	var newBlock Block
 
@@ -269,7 +269,7 @@ func generateBlock(oldBlock Block, BPM int, address string) (Block, error) {
 
 	newBlock.Index = oldBlock.Index + 1
 	newBlock.Timestamp = t.String()
-	newBlock.BPM = BPM
+	newBlock.LicenseInfo = licenseInfo
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = calculateBlockHash(newBlock)
 	newBlock.Validator = address
