@@ -19,6 +19,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+/**
+* controller (HTTP CALL) -> Service -> lib -> model
+Service -> lib - можно обьединить
+*
+*/
 // Blockchain is a series of validated Blocks
 var Blockchain []Block
 var tempBlocks []Block
@@ -39,7 +44,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	// create genesis block
 	t := time.Now()
 	genesisBlock := Block{}
@@ -80,6 +84,7 @@ func main() {
 	}
 }
 
+// TO FOLDER CONTROLLER ------->
 func handleConn(conn net.Conn) {
 	defer conn.Close()
 
@@ -157,6 +162,8 @@ func handleConn(conn net.Conn) {
 
 }
 
+
+// TO FOLDER LIB --------->
 // isBlockValid makes sure block is valid by checking index
 // and comparing the hash of the previous block
 func isBlockValid(newBlock, oldBlock Block) bool {

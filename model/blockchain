@@ -1,0 +1,8 @@
+struct Blockchain {
+	var Blockchain []Block
+}
+
+
+func (Blockchain b) appendBlock(Block block) {
+	// append
+}
