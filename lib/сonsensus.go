@@ -1,4 +1,4 @@
-package pos
+package lib
 
 import (
 	"fmt"
@@ -7,13 +7,18 @@ import (
 	"time"
 )
 
-// Blockchain is a series of validated Blocks
-var Blockchain []Block
-var tempBlocks []Block
+type Block struct {
+	Index       int
+	Timestamp   string
+	LicenseInfo string
+	Hash        string
+	PrevHash    string
+	Validator   string
+}
 
 // pickWinner creates a lottery pool of validators and chooses the validator who gets to forge a block to the blockchain
 // by random selecting from the pool, weighted by amount of tokens staked
-func PickWinner(Blockchain []Block, tempBlocks []Block, candidateBlocks make(chan Block), validators make(map[string]int)) {
+func PickWinner(blockchain []Block, tempBlocks []Block, candidateBlocks []Block, validators map[string]int) {
 
 	var mutex = &sync.Mutex{}
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blockchain/main/pos"
+	"blockchain/main/lib"
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
@@ -71,7 +71,7 @@ func main() {
 
 	go func() {
 		for {
-			pos.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
+			lib.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
 		}
 	}()
 
@@ -161,7 +161,6 @@ func handleConn(conn net.Conn) {
 	}
 
 }
-
 
 // TO FOLDER LIB --------->
 // isBlockValid makes sure block is valid by checking index
