@@ -7,18 +7,9 @@ import (
 	"time"
 )
 
-type Block struct {
-	Index       int
-	Timestamp   string
-	LicenseInfo string
-	Hash        string
-	PrevHash    string
-	Validator   string
-}
-
 // pickWinner creates a lottery pool of validators and chooses the validator who gets to forge a block to the blockchain
 // by random selecting from the pool, weighted by amount of tokens staked
-func PickWinner(blockchain []Block, tempBlocks []Block, candidateBlocks []Block, validators map[string]int) {
+func PickWinner(Blockchain, tempBlocks []Block, candidateBlocks []Block, validators map[string]int) []Block {
 
 	var mutex = &sync.Mutex{}
 
@@ -63,7 +54,7 @@ func PickWinner(blockchain []Block, tempBlocks []Block, candidateBlocks []Block,
 		for _, block := range temp {
 			if block.Validator == lotteryWinner {
 				mutex.Lock()
-				Blockchain := append(Blockchain, block)
+				Blockchain = append(Blockchain, block)
 				mutex.Unlock()
 				for range validators {
 					fmt.Println("\nwinning validator: " + lotteryWinner + "\n")
@@ -76,4 +67,6 @@ func PickWinner(blockchain []Block, tempBlocks []Block, candidateBlocks []Block,
 	mutex.Lock()
 	tempBlocks = []Block{}
 	mutex.Unlock()
+
+	return Blockchain
 }

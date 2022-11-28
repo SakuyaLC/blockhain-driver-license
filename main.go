@@ -71,7 +71,7 @@ func main() {
 
 	go func() {
 		for {
-			lib.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
+			Blockchain = lib.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
 		}
 	}()
 
