@@ -2,6 +2,7 @@ package main
 
 import (
 	"blockchain/main/lib"
+	"blockchain/main/model"
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
@@ -25,11 +26,11 @@ Service -> lib - можно обьединить
 *
 */
 // Blockchain is a series of validated Blocks
-var Blockchain []Block
-var tempBlocks []Block
+var Blockchain []model.Block
+var tempBlocks []model.Block
 
 // candidateBlocks handles incoming blocks for validation
-var candidateBlocks = make(chan Block)
+var candidateBlocks = make(chan model.Block)
 
 // announcements broadcasts winning validator to all nodes
 var announcements = make(chan string)
@@ -165,7 +166,7 @@ func handleConn(conn net.Conn) {
 // TO FOLDER LIB --------->
 // isBlockValid makes sure block is valid by checking index
 // and comparing the hash of the previous block
-func isBlockValid(newBlock, oldBlock Block) bool {
+func isBlockValid(newBlock, oldBlock model.Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
 		return false
 	}

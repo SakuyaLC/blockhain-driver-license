@@ -5,11 +5,13 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
+	"blockchain/main/model"
 )
 
 // pickWinner creates a lottery pool of validators and chooses the validator who gets to forge a block to the blockchain
 // by random selecting from the pool, weighted by amount of tokens staked
-func PickWinner(Blockchain, tempBlocks []Block, candidateBlocks []Block, validators map[string]int) []Block {
+func PickWinner(Blockchain, tempBlocks []model.Block, candidateBlocks []model.Block, validators map[string]int) []model.Block {
 
 	var mutex = &sync.Mutex{}
 
@@ -65,7 +67,7 @@ func PickWinner(Blockchain, tempBlocks []Block, candidateBlocks []Block, validat
 	}
 
 	mutex.Lock()
-	tempBlocks = []Block{}
+	tempBlocks = []model.Block{}
 	mutex.Unlock()
 
 	return Blockchain
