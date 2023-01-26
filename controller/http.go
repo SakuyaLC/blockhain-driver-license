@@ -10,7 +10,6 @@ import (
 	"log"
 	"net"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,18 +20,15 @@ func HandleConnection() {
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Success")
 	})
-
-	app.Get("/account", GetAccountInfo)
 	app.Post("/create-account", CreateAccount)
-	app.Get("/blockchain", GetBlockchain)
-	//123
+	app.Get("/account", GetAccountInfo)
+	//app.Get("/lottery", StartLottery)
+	//app.Get("/blockchain", GetBlockchain)
 	app.Listen(":80")
 }
 
 // Переписать
 func HandleConn(conn net.Conn, Blockchain []model.Block, validators map[string]int, candidateBlocks chan model.Block) {
-	defer conn.Close()
-	var mutex = &sync.Mutex{}
 
 	// validator address
 	var address string
@@ -64,9 +60,7 @@ func HandleConn(conn net.Conn, Blockchain []model.Block, validators map[string]i
 			for scanLicenseInfo.Scan() {
 				licenseInfo := scanLicenseInfo.Text()
 
-				mutex.Lock()
 				oldLastIndex := Blockchain[len(Blockchain)-1]
-				mutex.Unlock()
 
 				// create newBlock for consideration to be forged
 				newBlock, err := lib.GenerateBlock(oldLastIndex, licenseInfo, address)
@@ -85,9 +79,7 @@ func HandleConn(conn net.Conn, Blockchain []model.Block, validators map[string]i
 	// simulate receiving broadcast
 	for {
 		time.Sleep(20 * time.Second)
-		mutex.Lock()
 		output, err := json.Marshal(Blockchain)
-		mutex.Unlock()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -120,6 +112,7 @@ func CreateAccount(ctx *fiber.Ctx) error {
 	account := model.Account{
 		Name:     body.Name,
 		Password: body.Password,
+		Tokens:   body.Tokens,
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(account)

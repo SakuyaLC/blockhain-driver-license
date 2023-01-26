@@ -3,7 +3,6 @@ package lib
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -13,8 +12,6 @@ import (
 // pickWinner creates a lottery pool of validators and chooses the validator who gets to forge a block to the blockchain
 // by random selecting from the pool, weighted by amount of tokens staked
 func PickWinner(Blockchain []model.Block, tempBlocks []model.Block, candidateBlocks chan model.Block, validators map[string]int) []model.Block {
-	time.Sleep(20 * time.Second)
-
 	temp := tempBlocks
 
 	lotteryPool := []string{}
@@ -110,11 +107,4 @@ func GenerateBlock(oldBlock model.Block, licenseInfo string, address string) (mo
 	newBlock.Validator = address
 
 	return newBlock, nil
-}
-
-func ShowBlockchain(Blockchain []model.Block) {
-	time.Sleep(22 * time.Second)
-	fmt.Println("New Blockchain is:")
-	fmt.Println(Blockchain)
-	fmt.Println("")
 }
