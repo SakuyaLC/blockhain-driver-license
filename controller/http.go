@@ -4,7 +4,6 @@ import (
 	lib "blockchain/main/internal"
 	"blockchain/main/internal/model"
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -76,26 +75,16 @@ func HandleConn(conn net.Conn, Blockchain []model.Block, validators map[string]i
 		}
 	}()
 
-	// simulate receiving broadcast
-	for {
-		time.Sleep(20 * time.Second)
-		output, err := json.Marshal(Blockchain)
-		if err != nil {
-			log.Fatal(err)
-		}
-		io.WriteString(conn, string(output)+"\n")
-	}
-
 }
 
 func GetAccountInfo(ctx *fiber.Ctx) error {
 	user := model.Block{
 		Index:       1,
-		Timestamp:   "sdf",
-		LicenseInfo: "sdf",
-		Hash:        "sdf",
-		PrevHash:    "sdf",
-		Validator:   "sdf",
+		Timestamp:   time.Now().String(),
+		LicenseInfo: "License Info",
+		Hash:        "Some hash",
+		PrevHash:    "Some prev hash",
+		Validator:   "Validator",
 	}
 	return ctx.Status(fiber.StatusOK).JSON(user)
 }
@@ -116,6 +105,10 @@ func CreateAccount(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(account)
+}
+
+func StartLottery() {
+
 }
 
 func GetBlockchain(ctx *fiber.Ctx, Blockchain []model.Block) error {
