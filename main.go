@@ -4,7 +4,6 @@ import (
 	controller "blockchain/main/controller"
 	lib "blockchain/main/internal"
 	"blockchain/main/internal/model"
-	"sync"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -21,8 +20,6 @@ var tempBlocks []model.Block
 
 // candidateBlocks handles incoming blocks for validation
 var candidateBlocks = make(chan model.Block)
-
-var mutex = &sync.Mutex{}
 
 // validators keeps track of open validators and balances
 var validators = make(map[string]int)

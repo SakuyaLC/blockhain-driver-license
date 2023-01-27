@@ -113,5 +113,5 @@ func StartLottery() {
 
 func GetBlockchain(ctx *fiber.Ctx, Blockchain []model.Block) error {
 	//Получить блокчейн
-	return ctx.Status(fiber.StatusOK).JSON(Blockchain)
+	return ctx.Status(fiber.StatusOK).JSON(lib.PickWinner())
 }
