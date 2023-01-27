@@ -14,6 +14,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var validator1 model.Block;
+validator1 = {
+	Index:       2,
+	Timestamp:   time.Now().String(),
+	LicenseInfo: "Validator1 Info",
+	Hash:        lib.CalculateHash(LicenseInfo),
+	PrevHash:    "Some prev hash",
+	Validator:   "Validator1",
+}
+
 func HandleConnection() {
 	app := fiber.New()
 	app.Get("/", func(ctx *fiber.Ctx) error {
