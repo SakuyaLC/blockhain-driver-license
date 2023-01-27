@@ -2,8 +2,12 @@ package main
 
 import (
 	controller "blockchain/main/controller"
+	lib "blockchain/main/internal"
 	"blockchain/main/internal/model"
 	"sync"
+	"time"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 /**
@@ -25,10 +29,7 @@ var validators = make(map[string]int)
 
 func main() {
 	controller.HandleConnection()
-	/*err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	// create genesis block
 	t := time.Now()
 	genesisBlock := model.Block{}
@@ -36,37 +37,16 @@ func main() {
 	spew.Dump(genesisBlock)
 	Blockchain = append(Blockchain, genesisBlock)
 
-	tcpPort := os.Getenv("PORT")
-
-	// start TCP and serve TCP server
-	server, err := net.Listen("tcp", ":"+tcpPort)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("TCP Server Listening on port :", tcpPort)
-	defer server.Close()
-
-	go func() {
+	/*go func() {
 		for candidate := range candidateBlocks {
-			mutex.Lock()
 			tempBlocks = append(tempBlocks, candidate)
-			mutex.Unlock()
 		}
 	}()
 
 	go func() {
 		for {
 			Blockchain = lib.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
-			lib.ShowBlockchain(Blockchain)
 		}
-	}()
-
-	for {
-		conn, err := server.Accept()
-		if err != nil {
-			log.Fatal(err)
-		}
-		go controller.HandleConn(conn, Blockchain, validators, candidateBlocks)
-	}*/
+	}()*/
 
 }
