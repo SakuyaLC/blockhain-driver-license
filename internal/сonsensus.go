@@ -88,7 +88,7 @@ func CalculateHash(s string) string {
 
 // calculateBlockHash returns the hash of all block information
 func CalculateBlockHash(block model.Block) string {
-	record := string(block.Index) + block.Timestamp + block.LicenseInfo + block.PrevHash
+	record := string(rune(block.Index)) + block.Timestamp + block.LicenseInfo + block.PrevHash
 	return CalculateHash(record)
 }
 
