@@ -38,10 +38,12 @@ func HandleConnection() {
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Success")
 	})
-	app.Post("/create-account", CreateAccount)
 	app.Get("/account", GetAccountInfo)
-	//app.Get("/lottery", StartLottery)
+	app.Get("/lottery", StartLottery)
 	app.Get("/blockchain", GetBlockchain)
+
+	app.Post("/create-account", CreateAccount)
+
 	app.Listen(":80")
 }
 
