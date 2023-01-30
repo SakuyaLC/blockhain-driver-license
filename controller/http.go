@@ -11,28 +11,37 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gofiber/fiber/v2"
 )
 
-var validator1 model.Block;
-validator1 = {
-	Index:       2,
-	Timestamp:   time.Now().String(),
-	LicenseInfo: "Validator1 Info",
-	Hash:        lib.CalculateHash(LicenseInfo),
-	PrevHash:    "Some prev hash",
-	Validator:   "Validator1",
-}
+// Blockchain is a series of validated Blocks
+var Blockchain []model.Block
+var tempBlocks []model.Block
+
+// candidateBlocks handles incoming blocks for validation
+var candidateBlocks = make(chan model.Block)
+
+// validators keeps track of open validators and balances
+var validators = make(map[string]int)
 
 func HandleConnection() {
 	app := fiber.New()
+
+	// create genesis block
+	t := time.Now()
+	genesisBlock := model.Block{}
+	genesisBlock = model.Block{Index: 0, Timestamp: t.String(), LicenseInfo: "genesisLicenseInfo", Hash: lib.CalculateBlockHash(genesisBlock), PrevHash: "", Validator: ""}
+	spew.Dump(genesisBlock)
+	Blockchain = append(Blockchain, genesisBlock)
+
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Success")
 	})
 	app.Post("/create-account", CreateAccount)
 	app.Get("/account", GetAccountInfo)
 	//app.Get("/lottery", StartLottery)
-	//app.Get("/blockchain", GetBlockchain)
+	app.Get("/blockchain", GetBlockchain)
 	app.Listen(":80")
 }
 
@@ -121,7 +130,7 @@ func StartLottery() {
 
 }
 
-func GetBlockchain(ctx *fiber.Ctx, Blockchain []model.Block) error {
+func GetBlockchain(ctx *fiber.Ctx) error {
 	//Получить блокчейн
-	return ctx.Status(fiber.StatusOK).JSON(lib.PickWinner())
+	return ctx.Status(fiber.StatusOK).JSON(Blockchain)
 }
