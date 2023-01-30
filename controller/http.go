@@ -120,14 +120,16 @@ func CreateAccount(ctx *fiber.Ctx) error {
 	account := model.Account{
 		Name:     body.Name,
 		Password: body.Password,
+		Address:  lib.CalculateHash(time.Now().String()),
 		Tokens:   body.Tokens,
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(account)
 }
 
-func StartLottery() {
-
+func StartLottery(ctx *fiber.Ctx) error {
+	lib.PickWinner(Blockchain, tempBlocks, candidateBlocks, validators)
+	return ctx.Status(fiber.StatusOK).JSON("Lottery started")
 }
 
 func GetBlockchain(ctx *fiber.Ctx) error {
