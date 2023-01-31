@@ -3,6 +3,7 @@ package lib
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -11,8 +12,8 @@ import (
 
 // pickWinner creates a lottery pool of validators and chooses the validator who gets to forge a block to the blockchain
 // by random selecting from the pool, weighted by amount of tokens staked
-func PickWinner(Blockchain []model.Block, tempBlocks []model.Block, candidateBlocks chan model.Block, validators map[string]int) []model.Block {
-	temp := tempBlocks
+func PickWinner(Blockchain []model.Block, candidateBlocks []model.Block, validators map[string]int) []model.Block {
+	temp := candidateBlocks
 
 	lotteryPool := []string{}
 	if len(temp) > 0 {
@@ -48,13 +49,15 @@ func PickWinner(Blockchain []model.Block, tempBlocks []model.Block, candidateBlo
 		// add block of winner to blockchain and let all the other nodes know
 		for _, block := range temp {
 			if block.Validator == lotteryWinner {
+				fmt.Println("Winner is: " + block.Validator)
 				Blockchain = append(Blockchain, block)
+				fmt.Println(Blockchain)
 				break
 			}
 		}
 	}
 
-	tempBlocks = []model.Block{}
+	candidateBlocks = []model.Block{}
 
 	return Blockchain
 }
@@ -63,14 +66,17 @@ func PickWinner(Blockchain []model.Block, tempBlocks []model.Block, candidateBlo
 // and comparing the hash of the previous block
 func IsBlockValid(newBlock, oldBlock model.Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
+		fmt.Println("Block index is invalid")
 		return false
 	}
 
 	if oldBlock.Hash != newBlock.PrevHash {
+		fmt.Println("Block previous hash is invalid")
 		return false
 	}
 
 	if CalculateBlockHash(newBlock) != newBlock.Hash {
+		fmt.Println("Block hash is invalid")
 		return false
 	}
 
@@ -105,6 +111,14 @@ func GenerateBlock(oldBlock model.Block, licenseInfo string, address string) (mo
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = CalculateBlockHash(newBlock)
 	newBlock.Validator = address
+
+	fmt.Println("Block created")
+	fmt.Println("Index: " + string(rune(newBlock.Index)))
+	fmt.Println("Timestamp: " + string(newBlock.Timestamp))
+	fmt.Println("LicenseInfo: " + string(newBlock.LicenseInfo))
+	fmt.Println("PrevHash: " + string(newBlock.PrevHash))
+	fmt.Println("Hash: " + string(newBlock.Hash))
+	fmt.Println("Validator: " + string(newBlock.Validator))
 
 	return newBlock, nil
 }

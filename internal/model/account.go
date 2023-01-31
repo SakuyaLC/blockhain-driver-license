@@ -1,8 +1,9 @@
 package model
 
 type Account struct {
-	Name     string
-	Password string
-	Address  string
-	Tokens   int
+	Name        string
+	Password    string
+	LicenseInfo string
+	Address     string
+	Tokens      int
 }
