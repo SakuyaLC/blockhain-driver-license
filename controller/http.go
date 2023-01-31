@@ -87,7 +87,8 @@ func CreateAccount(ctx *fiber.Ctx) error {
 }
 
 func StartLottery(ctx *fiber.Ctx) error {
-	lib.PickWinner(Blockchain, candidateBlocks, validators)
+	Blockchain = lib.PickWinner(Blockchain, candidateBlocks, validators)
+	candidateBlocks = nil
 	return ctx.Status(fiber.StatusOK).JSON("Lottery started")
 }
 

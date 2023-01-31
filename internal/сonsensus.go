@@ -113,12 +113,7 @@ func GenerateBlock(oldBlock model.Block, licenseInfo string, address string) (mo
 	newBlock.Validator = address
 
 	fmt.Println("Block created")
-	fmt.Println("Index: " + string(rune(newBlock.Index)))
-	fmt.Println("Timestamp: " + string(newBlock.Timestamp))
-	fmt.Println("LicenseInfo: " + string(newBlock.LicenseInfo))
-	fmt.Println("PrevHash: " + string(newBlock.PrevHash))
-	fmt.Println("Hash: " + string(newBlock.Hash))
-	fmt.Println("Validator: " + string(newBlock.Validator))
+	fmt.Println(newBlock)
 
 	return newBlock, nil
 }
