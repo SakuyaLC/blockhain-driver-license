@@ -51,7 +51,6 @@ func PickWinner(Blockchain []model.Block, candidateBlocks []model.Block, validat
 			if block.Validator == lotteryWinner {
 				fmt.Println("Winner is: " + block.Validator)
 				Blockchain = append(Blockchain, block)
-				fmt.Println(Blockchain)
 				break
 			}
 		}
@@ -111,9 +110,6 @@ func GenerateBlock(oldBlock model.Block, licenseInfo string, address string) (mo
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = CalculateBlockHash(newBlock)
 	newBlock.Validator = address
-
-	fmt.Println("Block created")
-	fmt.Println(newBlock)
 
 	return newBlock, nil
 }
