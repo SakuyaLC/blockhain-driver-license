@@ -1,8 +1,12 @@
 package controller
 
 import (
+	"blockchain/main/db"
 	lib "blockchain/main/internal"
 	"blockchain/main/internal/model"
+	"context"
+	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -21,41 +25,43 @@ var validators = make(map[string]int)
 func HandleConnection() {
 	app := fiber.New()
 
-	// create genesis block
-	t := time.Now()
-	genesisBlock := model.Block{}
-	genesisBlock = model.Block{Index: 0, Timestamp: t.String(), LicenseInfo: "genesisLicenseInfo", Hash: lib.CalculateBlockHash(genesisBlock), PrevHash: "", Validator: ""}
-	spew.Dump(genesisBlock)
-	Blockchain = append(Blockchain, genesisBlock)
+	Blockchain = db.UpdateBlockchain()
+
+	hasRecords, err := db.CheckIfCollectionHasRecords(context.Background(), "blocks")
+	if err != nil {
+		// Обработка ошибки
+		fmt.Println("Error while initiating blockchain!")
+	}
+	if hasRecords {
+		// Если есть записи в коллекции
+		Blockchain = db.UpdateBlockchain()
+	} else {
+		// Если нет записей в коллекции
+		t := time.Now()
+		genesisBlock := model.Block{}
+		genesisBlock = model.Block{Index: 0, Timestamp: t.String(), Info: "genesisLicenseInfo", Hash: lib.CalculateBlockHash(genesisBlock), PrevHash: "", Validator: ""}
+		spew.Dump(genesisBlock)
+		Blockchain = append(Blockchain, genesisBlock)
+		db.InsertBlock(genesisBlock)
+	}
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Success")
 	})
-	app.Get("/account", GetAccountInfo)
 	app.Get("/lottery", StartLottery)
 	app.Get("/blockchain", GetBlockchain)
 
-	app.Post("/create-account", CreateAccount)
+	app.Post("/create-block", CreateBlock)
 
 	app.Listen(":80")
 }
 
-func GetAccountInfo(ctx *fiber.Ctx) error {
-	user := model.Block{
-		Index:       1,
-		Timestamp:   time.Now().String(),
-		LicenseInfo: "License Info",
-		Hash:        "Some hash",
-		PrevHash:    "Some prev hash",
-		Validator:   "Validator",
+func CreateBlock(ctx *fiber.Ctx) error {
+
+	var message struct {
+		Message string `json:"message"`
 	}
-	return ctx.Status(fiber.StatusOK).JSON(user)
-}
-
-func CreateAccount(ctx *fiber.Ctx) error {
-
-	body := new(model.Account)
-	err := ctx.BodyParser(body)
+	err := ctx.BodyParser(&message)
 
 	if err != nil {
 		ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
@@ -65,23 +71,23 @@ func CreateAccount(ctx *fiber.Ctx) error {
 	// validator address
 	var address string = lib.CalculateHash(time.Now().String())
 
-	account := model.Account{
-		Name:        body.Name,
-		Password:    body.Password,
-		LicenseInfo: body.LicenseInfo,
-		Address:     address,
-		Tokens:      body.Tokens,
-	}
+	info := message.Message
 
-	validators[address] = account.Tokens
+	// Случайное число в диапазоне от 50 до 100
+	rand.Seed(time.Now().UnixNano())
+	randomInt := rand.Intn(51) + 50
+
+	validators[address] = randomInt
 
 	oldLastIndex := Blockchain[len(Blockchain)-1]
 
 	// create newBlock for consideration to be forged
-	newBlock, err := lib.GenerateBlock(oldLastIndex, account.LicenseInfo, address)
+	newBlock, err := lib.GenerateBlock(oldLastIndex, info, address)
 	if lib.IsBlockValid(newBlock, oldLastIndex) {
 		candidateBlocks = append(candidateBlocks, newBlock)
 	}
+
+	fmt.Println("New block info: " + newBlock.Info)
 
 	return ctx.Status(fiber.StatusOK).JSON(candidateBlocks)
 }

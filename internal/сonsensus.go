@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"blockchain/main/db"
 	"blockchain/main/internal/model"
 )
 
@@ -58,6 +59,12 @@ func PickWinner(Blockchain []model.Block, candidateBlocks []model.Block, validat
 
 	candidateBlocks = []model.Block{}
 
+	// Перебор блоков в цикле
+	for _, block := range Blockchain {
+		// Добавление блока в MongoDB
+		db.InsertBlock(block)
+	}
+
 	return Blockchain
 }
 
@@ -93,7 +100,7 @@ func CalculateHash(s string) string {
 
 // calculateBlockHash returns the hash of all block information
 func CalculateBlockHash(block model.Block) string {
-	record := string(rune(block.Index)) + block.Timestamp + block.LicenseInfo + block.PrevHash
+	record := string(rune(block.Index)) + block.Timestamp + block.Info + block.PrevHash
 	return CalculateHash(record)
 }
 
@@ -106,7 +113,7 @@ func GenerateBlock(oldBlock model.Block, licenseInfo string, address string) (mo
 
 	newBlock.Index = oldBlock.Index + 1
 	newBlock.Timestamp = t.String()
-	newBlock.LicenseInfo = licenseInfo
+	newBlock.Info = licenseInfo
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = CalculateBlockHash(newBlock)
 	newBlock.Validator = address
