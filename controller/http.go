@@ -53,10 +53,12 @@ func HandleConnection() {
 
 	app.Post("/create-block", CreateBlock)
 
-	app.Listen(":80")
+	app.Listen(":8080")
 }
 
 func CreateBlock(ctx *fiber.Ctx) error {
+
+	startTime := time.Now()
 
 	var message struct {
 		Message string `json:"message"`
@@ -87,7 +89,14 @@ func CreateBlock(ctx *fiber.Ctx) error {
 		candidateBlocks = append(candidateBlocks, newBlock)
 	}
 
-	fmt.Println("New block info: " + newBlock.Info)
+	//fmt.Println("New block info: " + newBlock.Info)
+	fmt.Println(newBlock.Index)
+
+	endTime := time.Now()
+
+	executionTime := endTime.Sub(startTime)
+
+	fmt.Println("Execution time:", executionTime.Microseconds())
 
 	return ctx.Status(fiber.StatusOK).JSON(candidateBlocks)
 }
